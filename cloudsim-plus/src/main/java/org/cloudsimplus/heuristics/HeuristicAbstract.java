@@ -245,4 +245,43 @@ public abstract class HeuristicAbstract<S extends HeuristicSolution<?>>  impleme
 	public void setNeighborhoodSearchesByIteration(final int neighborhoodSearches) {
         this.neighborhoodSearchesByIteration = neighborhoodSearches;
     }
+
+    public double getVectorLength(List<Double> vec){
+	    double val = 0;
+	    for(double d: vec)
+	        val+=(d*d);
+	    return Math.sqrt(val);
+    }
+    public List<Double> getA(List<Double> a, List<Double> r){
+        List<Double> rv = new ArrayList<>();
+        for(int i=0;i<a.size();i++){
+            rv.add(2*a.get(i)*r.get(i) - a.get(i));
+        }
+        return rv;
+    }
+    public List<Double> geta(int curIt, int totIt, List<Vm> vms){
+        double val = 2 - 2*((double)(curIt))/totIt;
+        List<Double> rv = new ArrayList<>();
+        for(Vm vm: vms)
+            rv.add(val);
+
+        return rv;
+    }
+    public List<Double> getC(List<Double> r){
+	    List<Double> rv = new ArrayList<>();
+	    for(double val: r){
+	        rv.add(2*val);
+        }
+        return rv;
+    }
+    public List<Double> getr(List<Vm> vms){
+	    List<Double> rVec = new ArrayList<>();
+	    for(Vm vm: vms){
+	        rVec.add(getRandomInRange(0,1));
+        }
+        return rVec;
+    }
+    public double getRandomInRange(int low, int high){
+        return low + Math.random()*(high-low);
+    }
 }
