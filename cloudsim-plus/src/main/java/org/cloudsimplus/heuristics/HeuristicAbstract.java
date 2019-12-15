@@ -131,39 +131,56 @@ public abstract class HeuristicAbstract<S extends HeuristicSolution<?>>  impleme
 		final long startTime = System.currentTimeMillis();
 //		setBestSolutionSoFar(getInitialSolution());
         List<Vm> vmList =  getVmList();
-        int iteration = 0;
-        int maxIteration = 100;
 
+        // defines initial population
         List<List<Vm>> population = getInitPop(vmList);
 
+        // fitness calculation
+        List<Double> fitVals = getFitnessValues(population);
+
+        // finding the leader route
+        List<Vm> leader = null;
+        Double maxFitness = Double.MIN_VALUE;
+        for(int i = 0; i < population.size(); i++) {
+            if(fitVals.get(i) > maxFitness) {
+                leader = population.get(i);
+                maxFitness = fitVals.get(i);
+            }
+        }
+
+        // iteration start here
+        int iteration = 0;
+        int maxIteration = 100;
 		while (iteration < maxIteration) {
-		    // one iteration
+		    // new population that would replace the current population at the end of the iteration
+            List<List<Vm>> newPopulation = new ArrayList<>();
 
-            //fitness calculation
-            List<Double> fitVals = getFitnessValues(population);
+            // for each search agent
+            for (List<Vm> agent : population){
+                // TODO: evaluate values
+                // select k
+                // update route
+            }
 
-            List<Vm> leader = null;
-            int maxFitness = -1;
-
-            for(int i=0;i<population.size();i++){
-                if(fitVals.get(i) > maxFitness) {
+            // update system state : (i) Replace population with newly generated population (ii) Recalculate fitVals, (iii) Update leader route, (iv) iteration++
+            population = newPopulation;
+            fitVals = getFitnessValues(population);
+            maxFitness = Double.MIN_VALUE;
+            for (int i = 0; i < population.size(); i++) {
+                if (fitVals.get(i) > maxFitness) {
                     leader = population.get(i);
+                    maxFitness = fitVals.get(i);
                 }
             }
-
-            for(List<Vm>: population){
-                // TODO evaluate values
-            }
-
-            searchSolutionInNeighborhood();
-//            updateSystemStates();
-
             iteration++;
-		}
-		setSolveTime((System.currentTimeMillis() - startTime)/1000.0);
+        }
 
-        // get leader
-		return convertToSolution(leader);
+        // get S : cloudletToVmMapping
+		S clVmMap = convertToSolution(leader);
+
+        setSolveTime((System.currentTimeMillis() - startTime)/1000.0);
+
+        return clVmMap;
 	}
 
 	public S convertToSolution(List<Vm> leader){
