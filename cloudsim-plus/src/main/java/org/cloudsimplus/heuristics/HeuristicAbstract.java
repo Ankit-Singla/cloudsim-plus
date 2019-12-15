@@ -180,15 +180,30 @@ public abstract class HeuristicAbstract<S extends HeuristicSolution<?>>  impleme
         }
 
         // get S : cloudletToVmMapping
-		S clVmMap = convertToSolution(leader);
+		S clVmMap = convertToSolution(leader, cloudletList);
 
         setSolveTime((System.currentTimeMillis() - startTime)/1000.0);
 
         return clVmMap;
 	}
 
-	public S convertToSolution(List<Vm> leader){
+	public S convertToSolution(List<Vm> leader, List<Cloudlet> cloudletList){
+        final CloudletToVmMappingSolution solution = new CloudletToVmMappingSolution(this);
+        int i=0, j=0;
+        long load = 0;
+        while(i<cloudletList.size() && j<leader.size()){
+            Cloudlet cl = cloudletList.get(i++);
+            load+=cl.getLength();
+            solution.bindCloudletToVm(cl, leader.get(j));
 
+            if(load>M){
+                j++;
+                load=0;
+            }
+        }
+
+        //TODO not sure about this typecase
+        return (S)solution;
     }
 	public List<List<Vm>> getInitPop(List<Vm> vmList){
 	    // TODO return the population by permutation: 30
