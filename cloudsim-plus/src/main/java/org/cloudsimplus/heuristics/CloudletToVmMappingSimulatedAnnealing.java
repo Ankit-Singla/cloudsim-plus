@@ -68,7 +68,9 @@ public class CloudletToVmMappingSimulatedAnnealing
         cloudletList.forEach(cloudlet -> solution.bindCloudletToVm(cloudlet, getRandomVm()));
         return solution;
     }
-
+//    public List<Cloudlet> getCloudletList(){
+//        return cloudletList;
+//    }
     private boolean isReadToGenerateInitialSolution(){
         return !cloudletList.isEmpty() && !vmList.isEmpty();
     }

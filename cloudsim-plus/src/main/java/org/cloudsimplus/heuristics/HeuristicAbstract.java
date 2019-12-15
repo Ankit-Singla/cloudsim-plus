@@ -23,6 +23,7 @@
  */
 package org.cloudsimplus.heuristics;
 
+import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.distributions.ContinuousDistribution;
 import org.cloudbus.cloudsim.vms.Vm;
 
@@ -45,6 +46,7 @@ public abstract class HeuristicAbstract<S extends HeuristicSolution<?>>  impleme
 	/**
 	 * Reference to the generic class that will be used to instantiate objects.
 	 */
+	public static Double M;
     private final Class<S> solutionClass;
 
 	private final ContinuousDistribution random;
@@ -131,6 +133,8 @@ public abstract class HeuristicAbstract<S extends HeuristicSolution<?>>  impleme
 		final long startTime = System.currentTimeMillis();
 //		setBestSolutionSoFar(getInitialSolution());
         List<Vm> vmList =  getVmList();
+        List<Cloudlet> cloudletList = getCloudletList();
+        //TODO Calculate M
 
         // defines initial population
         List<List<Vm>> population = getInitPop(vmList);
@@ -164,7 +168,7 @@ public abstract class HeuristicAbstract<S extends HeuristicSolution<?>>  impleme
 
             // update system state : (i) Replace population with newly generated population (ii) Recalculate fitVals, (iii) Update leader route, (iv) iteration++
             population = newPopulation;
-            fitVals = getFitnessValues(population);
+            fitVals = getFitnessValues(population, cloudletList);
             maxFitness = Double.MIN_VALUE;
             for (int i = 0; i < population.size(); i++) {
                 if (fitVals.get(i) > maxFitness) {
@@ -189,6 +193,39 @@ public abstract class HeuristicAbstract<S extends HeuristicSolution<?>>  impleme
 	public List<List<Vm>> getInitPop(List<Vm> vmList){
 	    // TODO return the population by permutation: 30
         return new ArrayList<>();
+    }
+
+    public Double getFitnessValue(List<Vm> perm, List<Cloudlet> cloudlets){
+        int i=0, j=0;
+        long[] loads = new long[perm.size()];
+        while(i < cloudlets.size() && j<perm.size()){
+            loads[j]+=cloudlets.get(i++).getLength();
+            if(loads[j]>M){
+                j++;
+            }
+        }
+        long maxLoad = -1;
+        for(long load: loads)
+            maxLoad = Math.max(maxLoad,load);
+
+        double avgUtilization = 0;
+        for(long load: loads){
+            avgUtilization+=(load/maxLoad);
+        }
+        avgUtilization/=perm.size();
+
+        //assuming all processor queues are valid (just to get this to work, threshold can be added later)
+
+        return avgUtilization/(double)maxLoad;
+
+    }
+
+    public List<Double> getFitnessValues(List<List<Vm>> population, List<Cloudlet> cloudlets){
+	    List<Double> rv = new ArrayList<>();
+	    for(List<Vm> vms: population){
+	        rv.add(getFitnessValue(vms, cloudlets));
+        }
+	    return rv;
     }
 
     private void searchSolutionInNeighborhood() {

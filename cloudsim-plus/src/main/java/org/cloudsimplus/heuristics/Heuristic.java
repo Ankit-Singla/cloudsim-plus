@@ -23,6 +23,7 @@
  */
 package org.cloudsimplus.heuristics;
 
+import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.vms.Vm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,6 +100,7 @@ public interface Heuristic<S extends HeuristicSolution<?>> {
     S getInitialSolution();
 
     List<Vm> getVmList();
+    List<Cloudlet> getCloudletList();
 
     /**
      *
