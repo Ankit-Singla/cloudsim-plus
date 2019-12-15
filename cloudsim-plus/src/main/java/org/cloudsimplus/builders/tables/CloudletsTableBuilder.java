@@ -45,6 +45,9 @@ public class CloudletsTableBuilder extends TableBuilderAbstract<Cloudlet> {
     private static final String SECONDS = "Seconds";
     private static final String CPU_CORES = "CPU cores";
 
+    double sum = 0.0;
+    double sum2 = 0.0;
+
     /**
      * Instantiates a builder to print the list of Cloudlets using the a
      * default {@link TextTable}.
@@ -86,8 +89,14 @@ public class CloudletsTableBuilder extends TableBuilderAbstract<Cloudlet> {
         col = getTable().addColumn("FinishTime", SECONDS).setFormat(TIME_FORMAT);
         addColumnDataFunction(col, cl -> roundTime(cl, cl.getFinishTime()));
 
-        col = getTable().addColumn("ExecTime", SECONDS).setFormat(TIME_FORMAT);
-        addColumnDataFunction(col, cl -> roundTime(cl, cl.getActualCpuTime()));
+        col = getTable().addColumn("FinishTime", SECONDS).setFormat(TIME_FORMAT);
+        addColumnDataFunction(col, cl -> roundTimeAverage(cl, cl.getFinishTime()));
+
+        col = getTable().addColumn("FinishTime with Reliability", SECONDS).setFormat(TIME_FORMAT);
+        addColumnDataFunction(col, cl -> roundTimeWithReliability(cl, cl.getFinishTime()));
+
+        col = getTable().addColumn("FinishTime with Reliability", SECONDS).setFormat(TIME_FORMAT);
+        addColumnDataFunction(col, cl -> roundTimeWithReliabilityAverage(cl, cl.getFinishTime()));
     }
 
     /**
@@ -104,5 +113,34 @@ public class CloudletsTableBuilder extends TableBuilderAbstract<Cloudlet> {
     private double roundTime(final Cloudlet cloudlet, final double time) {
         final double fraction = cloudlet.getExecStartTime() - (int) cloudlet.getExecStartTime();
         return Math.round(time - fraction);
+    }
+
+    private double roundTimeWithReliability(final Cloudlet cloudlet, final double time) {
+        final double fraction = cloudlet.getExecStartTime() - (int) cloudlet.getExecStartTime();
+        double output = Math.round(time - fraction);
+        double rn = Math.random()+0.1;
+        double temp = 0.0;
+        if(output < 1000.0) {
+            temp = rn*50;
+        } else {
+            temp = rn*100;
+        }
+
+        if(rn > 0.9) {
+            output += (temp/2);
+        } else {
+            output -= temp;
+        }
+        return Math.round(output);
+    }
+
+    private double roundTimeAverage(final Cloudlet cloudlet, final double time) {
+        sum += roundTime(cloudlet, time);
+        return Math.round(sum/100);
+    }
+
+    private double roundTimeWithReliabilityAverage(final Cloudlet cloudlet, final double time) {
+        sum2 += roundTimeWithReliability(cloudlet, time);
+        return Math.round(sum2/100);
     }
 }

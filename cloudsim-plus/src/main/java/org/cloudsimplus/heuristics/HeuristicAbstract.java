@@ -24,9 +24,11 @@
 package org.cloudsimplus.heuristics;
 
 import org.cloudbus.cloudsim.distributions.ContinuousDistribution;
+import org.cloudbus.cloudsim.vms.Vm;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 /**
  * A base class for {@link Heuristic} implementations.
@@ -127,15 +129,50 @@ public abstract class HeuristicAbstract<S extends HeuristicSolution<?>>  impleme
 	@Override
 	public S solve() {
 		final long startTime = System.currentTimeMillis();
-		setBestSolutionSoFar(getInitialSolution());
-		while (!isToStopSearch()) {
+//		setBestSolutionSoFar(getInitialSolution());
+        List<Vm> vmList =  getVmList();
+        int iteration = 0;
+        int maxIteration = 100;
+
+        List<List<Vm>> population = getInitPop(vmList);
+
+		while (iteration < maxIteration) {
+		    // one iteration
+
+            //fitness calculation
+            List<Double> fitVals = getFitnessValues(population);
+
+            List<Vm> leader = null;
+            int maxFitness = -1;
+
+            for(int i=0;i<population.size();i++){
+                if(fitVals.get(i) > maxFitness) {
+                    leader = population.get(i);
+                }
+            }
+
+            for(List<Vm>: population){
+                // TODO evaluate values
+            }
+
             searchSolutionInNeighborhood();
-            updateSystemState();
+//            updateSystemStates();
+
+            iteration++;
 		}
 		setSolveTime((System.currentTimeMillis() - startTime)/1000.0);
 
-		return getBestSolutionSoFar();
+        // get leader
+		return convertToSolution(leader);
 	}
+
+	public S convertToSolution(List<Vm> leader){
+
+    }
+	public List<List<Vm>> getInitPop(List<Vm> vmList){
+	    // TODO return the population by permutation: 30
+        return new ArrayList<>();
+    }
 
     private void searchSolutionInNeighborhood() {
         for (int i = 0; i < getNeighborhoodSearchesByIteration(); i++) {
@@ -146,6 +183,10 @@ public abstract class HeuristicAbstract<S extends HeuristicSolution<?>>  impleme
         }
     }
 
+    private void updateSystemStates(S solution) {
+
+    }
+//    public
     @Override
 	public S getBestSolutionSoFar() {
 	    return bestSolutionSoFar;

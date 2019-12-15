@@ -23,8 +23,11 @@
  */
 package org.cloudsimplus.heuristics;
 
+import org.cloudbus.cloudsim.vms.Vm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * <p>Provides the methods to be used for implementation of heuristics
@@ -94,6 +97,8 @@ public interface Heuristic<S extends HeuristicSolution<?>> {
      * @return the initial randomly generated solution
      */
     S getInitialSolution();
+
+    List<Vm> getVmList();
 
     /**
      *

@@ -63,6 +63,7 @@ public class DatacenterBrokerHeuristic extends DatacenterBrokerSimple {
                 System.lineSeparator(),
                 "Please wait... It may take a while, depending on heuristic parameters and number of Cloudlets and Vm's.");
 
+        // party popper
 	    final CloudletToVmMappingSolution solution = heuristic.solve();
         LOGGER.info(
                 "{} finished the solution find for mapping Cloudlets to Vm's in {} seconds with a solution cost of {}",

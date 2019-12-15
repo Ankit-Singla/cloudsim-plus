@@ -77,7 +77,7 @@ import java.util.Map;
  */
 public class DatacenterBrokerHeuristicExample {
     private static final int HOSTS_TO_CREATE = 100;
-    private static final int VMS_TO_CREATE = 50;
+    private static final int VMS_TO_CREATE = 25;
     private static final int CLOUDLETS_TO_CREATE = 100;
 
     /**
